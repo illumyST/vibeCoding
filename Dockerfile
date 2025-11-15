@@ -1,56 +1,67 @@
-# 基礎映像：使用較小的 Alpine 版本 (Node 20)
-FROM node:20-alpine AS builder
-
-# 設定工作目錄
+# ====== Dependencies 階段 ======
+FROM node:20-alpine AS deps
 WORKDIR /app
-
 COPY package.json package-lock.json* ./
-# 使用 npm ci 取得一致且乾淨的依賴 (含 devDependencies 供編譯 Tailwind/TypeScript)
 RUN npm ci
 
-# 複製原始碼
+# ====== Builder 階段 ======
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# 複製依賴
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# 設定構建時的環境變數
 ARG DATABASE_URL="mysql://root:password@localhost:3306/zeabur"
 ENV DATABASE_URL=${DATABASE_URL}
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# 產生 Prisma 客戶端
 RUN npx prisma generate
 
-# 進行 Next.js 編譯
+# 構建應用程式 (這會處理所有的 CSS 和 PostCSS)
 RUN npm run build
 
-# 移除 devDependencies 降低 runtime 體積
-RUN npm prune --production
+# ====== Production dependencies 階段 ======
+FROM node:20-alpine AS prod-deps
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production && npm cache clean --force
 
 # ====== Runtime 階段 ======
 FROM node:20-alpine AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-### 請在 Zeabur 平台上設定 DATABASE_URL，這裡留空或使用 ARG 作為 fallback ###
+# 創建 nextjs 用戶
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# 設定數據庫 URL (會被 Zeabur 環境變數覆蓋)
 ARG DATABASE_URL="mysql://root:password@localhost:3306/zeabur"
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Prisma 於 runtime 常需要查詢資料庫；若需 migrate，可在入口點腳本處理
-# 建議：容器啟動時執行 `npx prisma migrate deploy`（可在 ENTRYPOINT 或 CMD 前加一層腳本）
-
-# 複製必要輸出
+# 複製必要文件
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/app ./app
-COPY --from=builder /app/components ./components
-COPY --from=builder /app/lib ./lib
+COPY --from=builder /app/prisma ./prisma
 
-# 可選：健康檢查（依實際 API 路徑）
-# HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:3000/api/health || exit 1
+# 複製構建產物 (.next 資料夾包含所有處理過的 CSS)
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+
+# 複製啟動腳本
+COPY --chown=nextjs:nodejs docker-start.sh ./docker-start.sh
+RUN chmod +x docker-start.sh
+
+# 切換到 nextjs 用戶
+USER nextjs
 
 EXPOSE 3000
 
 # 啟動前執行 migrate，然後啟動 Next.js
-COPY docker-start.sh ./docker-start.sh
-RUN chmod +x docker-start.sh
 CMD ["./docker-start.sh"]

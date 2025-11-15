@@ -9,6 +9,9 @@
     "test": "jest --passWithNoTests",
     "seed": "node --require ts-node/register scripts/seed-admin.ts"
   },
+  "prisma": {
+    "seed": "ts-node scripts/seed-admin.ts"
+  },
   "dependencies": {
     "@prisma/client": "latest",
     "@tanstack/react-query": "^5.0.0",
