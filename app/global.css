@@ -1,0 +1,308 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 無印良品色系 + 對比調整 (確保 WCAG AA) */
+:root {
+  --muji-beige: #f5f2e8;
+  --muji-warm-white: #faf9f5;
+  --muji-cream: #eee7d5;
+  --muji-light-brown: #ccb793;
+  --muji-brown: #9a7d52; /* 深化提高文字對比 */
+  --muji-dark-brown: #775c38;
+  --muji-charcoal: #2f2f2f; /* 深一點提高對比 */
+  --muji-soft-gray: #5c5c5c;
+  --muji-light-gray: #dedcd6;
+  --muji-accent-red: #b5433e; /* 稍微加深 */
+  --muji-success-green: #66705d;
+  --focus-ring: 2px solid var(--muji-brown);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.05);
+  --nav-bg: rgba(250,249,245,0.85); /* 導覽列背景（淺色） */
+}
+
+body {
+  font-family: 'Hiragino Sans', 'Yu Gothic UI', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: radial-gradient(circle at 50% 20%, var(--muji-warm-white), var(--muji-beige));
+  color: var(--muji-charcoal);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 無障礙設計基礎 */
+*:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 跳轉到主內容的連結（螢幕閱讀器友善） */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--muji-charcoal);
+  color: var(--muji-warm-white);
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* 無印良品風格按鈕 */
+/* 按鈕基礎樣式 */
+.muji-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  font-weight: 500; /* font-medium */
+  letter-spacing: 0.025em; /* tracking-wide */
+  user-select: none; /* select-none */
+  transition: background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out;
+  background-color: var(--muji-brown);
+  color: var(--muji-warm-white);
+  border: 1px solid var(--muji-brown);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+}
+
+.muji-btn:hover {
+  background-color: var(--muji-dark-brown);
+  border-color: var(--muji-dark-brown);
+}
+
+.muji-btn:focus {
+  --tw-ring-color: var(--muji-brown);
+}
+
+.muji-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  font-weight: 500; /* font-medium */
+  letter-spacing: 0.025em; /* tracking-wide */
+  transition: background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out;
+  background-color: transparent;
+  color: var(--muji-brown);
+  border: 1px solid var(--muji-brown);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+.muji-btn-secondary:hover {
+  background-color: var(--muji-beige);
+}
+
+/* 無印良品風格輸入框 */
+/* 輸入框 */
+.muji-input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+  background-color: var(--muji-warm-white);
+  border: 1px solid var(--muji-light-gray);
+  color: var(--muji-charcoal);
+  border-radius: var(--radius-sm);
+}
+
+.muji-input:focus {
+  border-color: var(--muji-brown);
+  --tw-ring-color: var(--muji-brown);
+  background-color: var(--muji-warm-white);
+}
+
+.muji-input::placeholder {
+  color: var(--muji-soft-gray);
+}
+
+/* 錯誤狀態 */
+.muji-input-error {
+  border-color: var(--muji-accent-red) !important;
+}
+
+.muji-input-error:focus {
+  --tw-ring-color: var(--muji-accent-red) !important;
+}
+
+/* 標籤樣式 */
+.muji-label {
+  display: block;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  font-weight: 500; /* font-medium */
+  margin-bottom: 0.5rem; /* mb-2 */
+  color: var(--muji-charcoal);
+}
+
+/* 卡片樣式 */
+/* 卡片 */
+.muji-card {
+  padding: 1.5rem; /* p-6 */
+  background-color: var(--muji-warm-white);
+  border: 1px solid var(--muji-light-gray);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+.muji-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right, rgba(255,255,255,0.4), rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+/* 導航樣式 */
+.muji-nav {
+  background-color: var(--nav-bg);
+  border-bottom: 1px solid var(--muji-light-gray);
+  backdrop-filter: blur(12px);
+}
+
+/* 表格樣式 */
+/* 表格 */
+.muji-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  background-color: var(--muji-warm-white);
+  border: 1px solid var(--muji-light-gray);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.muji-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  font-weight: 500; /* font-medium */
+  background-color: var(--muji-beige);
+  color: var(--muji-charcoal);
+}
+
+.muji-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  color: var(--muji-charcoal);
+  border-top: 1px solid var(--muji-light-gray);
+}
+
+.muji-table tbody tr:hover {
+  background-color: var(--muji-cream);
+}
+.muji-table tbody tr:focus-within {
+  outline: var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* 連結樣式 */
+.muji-link {
+  color: var(--muji-brown);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.2s;
+}
+
+.muji-link:hover {
+  text-decoration-color: var(--muji-brown);
+}
+
+.muji-link:focus {
+  text-decoration-color: var(--muji-brown);
+}
+
+/* 錯誤訊息樣式 */
+/* 訊息區塊 */
+.muji-error {
+  padding: 1rem; /* p-4 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  display: flex; /* flex */
+  align-items: flex-start; /* items-start */
+  gap: 0.75rem; /* gap-3 */
+  background-color: #fef2f2;
+  border: 1px solid var(--muji-accent-red);
+  color: var(--muji-accent-red);
+  border-radius: var(--radius-sm);
+}
+.muji-error::before {
+  content: '⚠';
+  font-size: 1.1rem;
+}
+
+/* 成功訊息樣式 */
+.muji-success {
+  padding: 1rem; /* p-4 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  display: flex; /* flex */
+  align-items: flex-start; /* items-start */
+  gap: 0.75rem; /* gap-3 */
+  background-color: #f0f4f0;
+  border: 1px solid var(--muji-success-green);
+  color: var(--muji-success-green);
+  border-radius: var(--radius-sm);
+}
+.muji-success::before {
+  content: '✓';
+  font-size: 1.1rem;
+}
+
+/* 響應式字體大小 */
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+  .muji-card { padding: 1.25rem; }
+}
+
+/* 高對比度模式支援 */
+@media (prefers-contrast: high) {
+  :root {
+    --muji-charcoal: #000000;
+    --muji-soft-gray: #262626;
+    --muji-brown: #4a3721;
+    --muji-dark-brown: #372613;
+  }
+}
+
+/* 減少動畫偏好 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 深色模式：使用 .dark class 切換，避免閃爍 */
+.dark {
+  --muji-warm-white: #1e1e1e;
+  --muji-beige: #262522;
+  --muji-charcoal: #efefef;
+  --muji-soft-gray: #c2c2c2;
+  --muji-light-gray: #333330;
+  --nav-bg: rgba(30,30,30,0.85); /* 導覽列背景（深色） */
+}
+.dark body { background: radial-gradient(circle at 50% 20%, #232323, #181818); }
+.dark .muji-card { background-color: #222220; }
+.dark .muji-table { background-color: #222220; }
